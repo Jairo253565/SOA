@@ -1,0 +1,94 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Wed Oct 10 17:40:35 CDT 2018
+  Author:  user
+  Type: BPEL 2.0 Process
+  Purpose: Asynchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="BPELProcessRR"
+         targetNamespace="http://xmlns.oracle.com/j2j_TopicSampleProducer/TopicSampleProducer/BPELProcessRR"
+         xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:client="http://xmlns.oracle.com/j2j_TopicSampleProducer/TopicSampleProducer/BPELProcessRR"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:ui="http://xmlns.oracle.com/soa/designer"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:ns1="http://xmlns.oracle.com/pcbpel/adapter/jms/j2j-TopicSampleProducer/TopicSampleProducer/IntegratedWeblogicServer"
+         xmlns:ns2="http://www.Sample.org/2001/XMLSchema">
+
+    <import ui:processWSDL="true" namespace="http://xmlns.oracle.com/j2j_TopicSampleProducer/TopicSampleProducer/BPELProcessRR" location="../WSDLs/BPELProcessRR.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PARTNERLINKS                                                      
+        List of services participating in this BPEL process               
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    --> 
+    <partnerLinks>
+        <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+        <partnerLink name="bpelprocessrr_client" partnerLinkType="client:BPELProcessRR" myRole="BPELProcessRRProvider" partnerRole="BPELProcessRRRequester"/>
+        <partnerLink name="IntegratedWeblogicServer" partnerLinkType="ns1:Produce_Message_plt"
+                     partnerRole="Produce_Message_role"/>
+    </partnerLinks>
+
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        VARIABLES                                                        
+        List of messages and XML documents used within this BPEL process 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <variables>
+        <!-- Reference to the message passed as input during initiation -->
+        <variable name="inputVariable" messageType="client:BPELProcessRRRequestMessage"/>
+
+        <!-- Reference to the message that will be sent back to the requester during callback -->
+        <variable name="outputVariable" messageType="client:BPELProcessRRResponseMessage"/>
+        <variable name="Invoke1_Produce_Message_InputVariable" messageType="ns1:Produce_Message_msg"/>
+    </variables>
+
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+       ORCHESTRATION LOGIC                                               
+       Set of activities coordinating the flow of messages across the    
+       services integrated within this business process                  
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <sequence name="main">
+        <!-- Receive input from requestor. (Note: This maps to operation defined in BPELProcessRR.wsdl) -->
+        <receive name="receiveInput" partnerLink="bpelprocessrr_client" portType="client:BPELProcessRR" operation="process" variable="inputVariable" createInstance="yes"/>
+        <assign name="Assign1">
+            <copy>
+                <from>$inputVariable.payload/ns2:ClientID</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Invoke1_Produce_Message_InputVariable.body/ns2:ClientID</to>
+            </copy>
+            <copy>
+                <from>$inputVariable.payload/ns2:singleString</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Invoke1_Produce_Message_InputVariable.body/ns2:singleString</to>
+            </copy>
+        </assign>
+        <invoke name="InvokeRequest" bpelx:invokeAsDetail="no" partnerLink="IntegratedWeblogicServer"
+                portType="ns1:Produce_Message_ptt" operation="Produce_Message"
+                inputVariable="Invoke1_Produce_Message_InputVariable"/>
+        <assign name="Assign2">
+            <copy>
+                <from>$Invoke1_Produce_Message_InputVariable.body/ns2:ClientID</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$outputVariable.payload/ns2:ClientID</to>
+            </copy>
+            <copy>
+                <from>$Invoke1_Produce_Message_InputVariable.body/ns2:singleString</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$outputVariable.payload/ns2:singleString</to>
+            </copy>
+        </assign>
+        <!-- 
+          Asynchronous callback to the requester. (Note: the callback location and correlation id is transparently handled using WS-addressing.)
+        -->
+        <invoke name="callbackClient" partnerLink="bpelprocessrr_client" portType="client:BPELProcessRRCallback" operation="processResponse" inputVariable="outputVariable"/>
+    </sequence>
+</process>
