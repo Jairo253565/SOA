@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Fri Oct 12 12:14:04 CDT 2018
+  Author:  user
+  Type: BPEL 2.0 Process
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="BPELProcess1"
+               targetNamespace="http://xmlns.oracle.com/GenerarPDF_Base64/GenerarPDF_Base64/BPELProcess1"
+               xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+               xmlns:client="http://xmlns.oracle.com/GenerarPDF_Base64/GenerarPDF_Base64/BPELProcess1"
+               xmlns:ora="http://schemas.oracle.com/xpath/extension"
+               xmlns:ui="http://xmlns.oracle.com/soa/designer"
+               xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://www.example.org/salida"
+         xmlns:ns1="http://www.example.org/entrada">
+
+    <import ui:processWSDL="true" namespace="http://xmlns.oracle.com/GenerarPDF_Base64/GenerarPDF_Base64/BPELProcess1" location="../WSDLs/BPELProcess1.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PARTNERLINKS                                                      
+        List of services participating in this BPEL process               
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    --> 
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="bpelprocess1_client" partnerLinkType="client:BPELProcess1" myRole="BPELProcess1Provider"/>
+  </partnerLinks>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <variable name="inputVariable" messageType="client:BPELProcess1RequestMessage"/>
+
+    <!-- Reference to the message that will be returned to the requester-->
+    <variable name="outputVariable" messageType="client:BPELProcess1ResponseMessage"/>
+    <variable name="codigoBase64" type="xsd:string"/>
+  </variables>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+
+    <!-- Receive input from requestor. (Note: This maps to operation defined in BPELProcess1.wsdl) -->
+    <receive name="receiveInput" partnerLink="bpelprocess1_client" portType="client:BPELProcess1" operation="process" variable="inputVariable" createInstance="yes"/>
+    <extensionActivity>
+      <bpelx:exec name="Java_Embedding1">
+        <![CDATA[?try {                   
+   /*Set values*/           
+   String nombre = ((XMLText)getVariableData("inputVariable", "payload", "/ns1:entrada/ns1:nombre/text()")).getText();             
+   String apellido = ((XMLText)getVariableData("inputVariable", "payload", "/ns1:entrada/ns1:apellido/text()")).getText();             
+   String edad = ((XMLText)getVariableData("inputVariable", "payload", "/ns1:entrada/ns1:edad/text()")).getText();             
+   String direccion = ((XMLText)getVariableData("inputVariable", "payload", "/ns1:entrada/ns1:direccion/text()")).getText();             
+   String profesion = ((XMLText)getVariableData("inputVariable", "payload", "/ns1:entrada/ns1:profesion/text()")).getText();             
+              
+   /*Build structure of PDF in HTML Lenguage*/           
+   String content = "<!doctype html>";            
+         content += "<html>";            
+         content += "<head>";            
+         content += "<meta charset=\"utf-8\"/>";            
+         content += "<title>Ejemplo PDF</title>";             
+         content += "</head>";            
+            
+         content += "<body>";            
+         content += "<h1>"+nombre+"</h1>";            
+         content += "<h2>"+apellido+"</h2>";            
+     content += "<h3>"+edad+"</h3>";            
+     content += "<h4>"+profesion+"</h4>";            
+     content += "<h5>"+direccion+"</h5>";            
+         content += "</body>";            
+         content += "</html>";            
+           
+  /*Transform HTML in bytes*/              
+  List<byte[]> pdf = new ArrayList<byte[]>();            
+  pdf.add(content.getBytes());            
+            
+  /*Change byte format to document format*/           
+  ByteArrayOutputStream outputStream = new ByteArrayOutputStream();           
+  Document document = new Document();          
+  PdfWriter writer;          
+  writer = PdfWriter.getInstance(document, outputStream);         
+  document.open();              
+  int x = 1;         
+  for (byte[] pagina : pdf) {         
+    if(x!=1)                             
+              document.newPage();         
+             
+        InputStream is = new ByteArrayInputStream(pagina);         
+    XMLWorkerHelper.getInstance().parseXHtml(writer, document, is);         
+    x++;         
+  }               
+  document.close();         
+         
+  /*Transform document format to Base64 code */         
+  byte[] bytes = outputStream.toByteArray();        
+  Base64 base64 = new Base64();       
+  System.out.println("\n\nLocalizacion JAR que instancia Base64: \n\n"+Base64.class.getProtectionDomain().getCodeSource().getLocation());     
+       
+  /*Assing value to bpel variable codigoBase64*/       
+  String salidaCodificada = base64.encodeToString(bytes);    
+  setVariableData("codigoBase64", salidaCodificada);    
+                  
+} catch (Exception e) {                 
+  System.out.println("exception "+e.getMessage());                 
+  addAuditTrailEntry(e);                 
+}]]>
+      </bpelx:exec>
+    </extensionActivity>
+    <assign name="Assign1">
+      <copy>
+        <from>$codigoBase64</from>
+        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$outputVariable.payload/ns2:codigo</to>
+      </copy>
+    </assign>
+    <!-- Generate reply to synchronous request -->
+    <reply name="replyOutput" partnerLink="bpelprocess1_client" portType="client:BPELProcess1" operation="process" variable="outputVariable"/>
+  </sequence>
+</process>

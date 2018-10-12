@@ -1,0 +1,63 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Faults>
+   <Fault>
+      <severity>error</severity>
+      <loc/>
+      <line>67</line>
+      <col>5</col>
+      <file>file:/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</file>
+      <name>/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</name>
+      <fix/>
+      <msg>illegal start of expression</msg>
+   </Fault>
+   <Fault>
+      <severity>error</severity>
+      <loc/>
+      <line>67</line>
+      <col>6</col>
+      <file>file:/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</file>
+      <name>/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</name>
+      <fix/>
+      <msg>illegal start of expression</msg>
+   </Fault>
+   <Fault>
+      <severity>error</severity>
+      <loc/>
+      <line>67</line>
+      <col>10</col>
+      <file>file:/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</file>
+      <name>/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</name>
+      <fix/>
+      <msg>illegal start of expression</msg>
+   </Fault>
+   <Fault>
+      <severity>error</severity>
+      <loc/>
+      <line>67</line>
+      <col>11</col>
+      <file>file:/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</file>
+      <name>/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</name>
+      <fix/>
+      <msg>';' expected</msg>
+   </Fault>
+   <Fault>
+      <severity>error</severity>
+      <loc/>
+      <line>122</line>
+      <col>7</col>
+      <file>file:/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</file>
+      <name>/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</name>
+      <fix/>
+      <msg>illegal start of type</msg>
+   </Fault>
+   <Fault>
+      <severity>error</severity>
+      <loc/>
+      <line>128</line>
+      <col>1</col>
+      <file>file:/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</file>
+      <name>/C:/JDeveloper/mywork/Oracle-SOA-Maven/GenerarPDF_Base64/GenerarPDF_Base64/SOA/SCA-INF/bpel/BPELPr~0/src/orabpel/bpelprocess1/ExecLetBxExe0.java</name>
+      <fix/>
+      <msg>class, interface, or enum expected</msg>
+   </Fault>
+</Faults>

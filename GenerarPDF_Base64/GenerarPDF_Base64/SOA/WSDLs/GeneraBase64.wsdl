@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions targetNamespace="urn:GeneraBase64"
+              xmlns="http://schemas.xmlsoap.org/wsdl/"
+              xmlns:tns="urn:GeneraBase64"
+              xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+              xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+              xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+              xmlns:ns1="http://www.example.org/entrada"
+              xmlns:ns2="http://www.example.org/salida">
+  <types>
+    <xsd:schema>
+      <xsd:import schemaLocation="../Schemas/entrada.xsd" namespace="http://www.example.org/entrada"/>
+      <xsd:import schemaLocation="../Schemas/salida.xsd" namespace="http://www.example.org/salida"/>
+    </xsd:schema>
+  </types>
+  <message name="input">
+    <part name="requestBody" element="ns1:entrada"/>
+  </message>
+  <message name="output">
+    <part name="responseBody" element="ns2:salida"/>
+  </message>
+  <portType name="Base64PortType">
+    <operation name="getBase64">
+      <input message="tns:input"/>
+      <output message="tns:output"/>
+    </operation>
+  </portType>
+  <binding name="Base64PortTypeSOAP12Binding" type="tns:Base64PortType">
+    <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="getBase64">
+      <soap12:operation style="document" soapAction="urn:GeneraBase64/getBase64"/>
+      <input>
+        <soap12:body use="literal" parts="requestBody"/>
+      </input>
+      <output>
+        <soap12:body use="literal" parts="responseBody"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="Service">
+    <port name="ServicePort" binding="tns:Base64PortTypeSOAP12Binding">
+      <soap12:address location="http://www.example.com"/>
+    </port>
+  </service>
+</definitions>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://www.example.org"
+            targetNamespace="http://www.example.org/entrada"
+            elementFormDefault="qualified">
+  <xsd:element name="entrada">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="nombre" type="xsd:string"/>
+        <xsd:element name="apellido" type="xsd:string"/>
+        <xsd:element name="edad" type="xsd:string"/>
+        <xsd:element name="direccion" type="xsd:string"/>
+        <xsd:element name="profesion" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>
