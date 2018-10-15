@@ -1,0 +1,54 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer
+
+  Created: Sun Oct 14 17:16:04 CDT 2018
+  Author:  user
+  Type: BPEL 2.0 Process
+  Purpose: Empty BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="BPELProcess1"
+               targetNamespace="http://xmlns.oracle.com/ex2ex_FileAdapterApp/FileAdapter/BPELProcess1"
+               xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+               xmlns:client="http://xmlns.oracle.com/ex2ex_FileAdapterApp/FileAdapter/BPELProcess1"
+               xmlns:ora="http://schemas.oracle.com/xpath/extension"
+               xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+               xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:ns1="http://xmlns.oracle.com/pcbpel/adapter/file/ex2ex_FileAdapterApp/FileAdapter/Read_fileService"
+         xmlns:ns2="http://xmlns.oracle.com/pcbpel/adapter/file/ex2ex_FileAdapterApp/FileAdapter/Write_fileReference"
+         xmlns:ui="http://xmlns.oracle.com/soa/designer">
+
+  <!--
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC
+     Set of activities coordinating the flow of messages across the
+     services integrated within this business process
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <import namespace="http://xmlns.oracle.com/pcbpel/adapter/file/ex2ex_FileAdapterApp/FileAdapter/Read_fileService"
+          location="../WSDLs/Read_fileService.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"
+          ui:processWSDL="true"/>
+  <partnerLinks>
+    <partnerLink name="Read_fileService" partnerLinkType="ns1:Read_plt" myRole="Read_role"/>
+    <partnerLink name="Write_fileReference" partnerLinkType="ns2:Write_plt" partnerRole="Write_role"/>
+  </partnerLinks>
+  <variables>
+    <variable name="Receive_Real_File_Read_InputVariable" messageType="ns1:Read_msg"/>
+    <variable name="Invoke_Write_File_Write_InputVariable" messageType="ns2:Write_msg"/>
+  </variables>
+  <sequence name="main">
+    <receive name="Receive_Real_File" createInstance="yes" partnerLink="Read_fileService" portType="ns1:Read_ptt"
+             operation="Read" variable="Receive_Real_File_Read_InputVariable"/>
+    <assign name="File_Assign1">
+      <copy>
+        <from>$Receive_Real_File_Read_InputVariable.body</from>
+        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Invoke_Write_File_Write_InputVariable.body</to>
+      </copy>
+    </assign>
+    <invoke name="Invoke_Write_File" partnerLink="Write_fileReference"
+            portType="ns2:Write_ptt" operation="Write" inputVariable="Invoke_Write_File_Write_InputVariable"
+            bpelx:invokeAsDetail="no"/>
+  </sequence>
+</process>
