@@ -1,0 +1,15 @@
+<?xml version= '1.0' encoding= 'UTF-8' ?>
+<wsdl:definitions
+     name="IHello"
+     targetNamespace="http://utils.test/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:bpws="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+     xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+     xmlns:tns="http://utils.test/"
+     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    >
+    <plnk:partnerLinkType name="HelloUtil.HelloService">
+        <plnk:role name="IHello" portType="tns:IHello"/>
+    </plnk:partnerLinkType>
+    <wsdl:import namespace="http://utils.test/" location="IHello.wsdl"/>
+</wsdl:definitions>

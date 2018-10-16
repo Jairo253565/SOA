@@ -1,0 +1,84 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Tue Oct 16 17:11:44 CDT 2018
+  Author:  user
+  Type: BPEL 2.0 Process
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="BPELProcessSpring"
+               targetNamespace="http://xmlns.oracle.com/x3x_SpringAdapterSOA12c/SpringAdapterSOA12c/BPELProcessSpring"
+               xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+               xmlns:client="http://xmlns.oracle.com/x3x_SpringAdapterSOA12c/SpringAdapterSOA12c/BPELProcessSpring"
+               xmlns:ora="http://schemas.oracle.com/xpath/extension"
+               xmlns:ui="http://xmlns.oracle.com/soa/designer"
+               xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable" xmlns:ns1="http://utils.test/"
+         xmlns:ns2="http://www.example.org">
+
+    <import ui:processWSDL="true" namespace="http://xmlns.oracle.com/x3x_SpringAdapterSOA12c/SpringAdapterSOA12c/BPELProcessSpring" location="../WSDLs/BPELProcessSpring.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PARTNERLINKS                                                      
+        List of services participating in this BPEL process               
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    --> 
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="bpelprocessspring_client" partnerLinkType="client:BPELProcessSpring" myRole="BPELProcessSpringProvider"/>
+    <partnerLink name="HelloUtil.HelloService" partnerLinkType="ns1:HelloUtil.HelloService" partnerRole="IHello"/>
+  </partnerLinks>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <variable name="inputVariable" messageType="client:BPELProcessSpringRequestMessage"/>
+
+    <!-- Reference to the message that will be returned to the requester-->
+    <variable name="outputVariable" messageType="client:BPELProcessSpringResponseMessage"/>
+    <variable name="InvokeSpring_saySomething_InputVariable" messageType="ns1:saySomethingInput"/>
+    <variable name="InvokeSpring_saySomething_OutputVariable" messageType="ns1:saySomethingOutput"/>
+  </variables>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+
+    <!-- Receive input from requestor. (Note: This maps to operation defined in BPELProcessSpring.wsdl) -->
+    <receive name="receiveInput" partnerLink="bpelprocessspring_client" portType="client:BPELProcessSpring" operation="process" variable="inputVariable" createInstance="yes"/>
+    <assign name="AssignInputParamt">
+      <copy>
+        <from>$inputVariable.payload/ns2:name</from>
+        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$outputVariable.payload/ns2:result</to>
+      </copy>
+    </assign>
+    <invoke name="InvokeSpring" partnerLink="HelloUtil.HelloService" portType="ns1:IHello"
+            operation="saySomething" inputVariable="InvokeSpring_saySomething_InputVariable"
+            outputVariable="InvokeSpring_saySomething_OutputVariable" bpelx:invokeAsDetail="no"/>
+    <assign name="AssignResult">
+      <copy>
+        <from>$InvokeSpring_saySomething_InputVariable.parameters/arg0</from>
+        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$InvokeSpring_saySomething_OutputVariable.parameters/return</to>
+      </copy>
+    </assign>
+    <!-- Generate reply to synchronous request -->
+    <reply name="replyOutput" partnerLink="bpelprocessspring_client" portType="client:BPELProcessSpring" operation="process" variable="outputVariable"/>
+  </sequence>
+</process>
